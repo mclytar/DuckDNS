@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.ServiceProcess;
 using System.Text;
 using System.Windows.Forms;
 
@@ -20,6 +21,8 @@ namespace DuckDNS
         private bool canClose = false;
         private Icon icoTray = Resources.tray;
         private Icon icoTrayC = Resources.tray_checking;
+
+        ServiceController svcController = null;
 
         public Form1()
         {
@@ -43,16 +46,52 @@ namespace DuckDNS
             if (!allowshowdisplay)
                 UpdateDNS();
 
-            if (DuckDNS.Program.IsAdministrator())
+            FetchService();
+
+            CheckServiceStatus();
+        }
+
+        public void FetchService()
+        {
+            ServiceController[] services = ServiceController.GetServices();
+            foreach (ServiceController service in services)
             {
-                restartAsAdministratorToolStripMenuItem.Enabled = false;
-                installWindowsServiceToolStripMenuItem.Enabled = true;
+                if (service.ServiceName == "DuckDNS")
+                {
+                    svcController = service;
+                    return;
+                }
+            }
+
+            svcController = null;
+        }
+
+        public void CheckServiceStatus()
+        {
+            if (svcController == null)
+            {
+                installServiceToolStripMenuItem.Visible = true;
+                uninstallServiceToolStripMenuItem.Visible = false;
+                startServiceToolStripMenuItem.Visible = false;
+                stopServiceToolStripMenuItem.Visible = false;
             }
             else
             {
-                restartAsAdministratorToolStripMenuItem.Enabled = true;
-                installWindowsServiceToolStripMenuItem.Enabled = false;
-                startServiceToolStripMenuItem.Enabled = false;
+                installServiceToolStripMenuItem.Visible = false;
+                uninstallServiceToolStripMenuItem.Visible = true;
+
+                if (svcController.Status == ServiceControllerStatus.Running
+                    || svcController.Status == ServiceControllerStatus.StartPending
+                    || svcController.Status == ServiceControllerStatus.ContinuePending)
+                {
+                    startServiceToolStripMenuItem.Visible = false;
+                    stopServiceToolStripMenuItem.Visible = true;
+                }
+                else
+                {
+                    startServiceToolStripMenuItem.Visible = true;
+                    stopServiceToolStripMenuItem.Visible = false;
+                }
             }
         }
 
@@ -194,16 +233,64 @@ namespace DuckDNS
             icoTrayC.Dispose();
         }
 
-        private void restartAsAdministratorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void installServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (DuckDNS.Program.ElevateProcess())
+            if (Program.RunAsAdministrator("--install"))
             {
-                Application.Exit();
+                MessageBox.Show("Service installed successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show("Unable to restart as administrator.", "DuckDNS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unable to install!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            FetchService();
+            CheckServiceStatus();
+        }
+
+        private void uninstallServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.RunAsAdministrator("--uninstall"))
+            {
+                MessageBox.Show("Service uninstalled successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Unable to uninstall!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            FetchService();
+            CheckServiceStatus();
+        }
+
+        private void startServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.RunAsAdministrator("--svc-start"))
+            {
+                MessageBox.Show("Service started successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Unable to start!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            FetchService();
+            CheckServiceStatus();
+        }
+
+        private void stopServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.RunAsAdministrator("--svc-stop"))
+            {
+                MessageBox.Show("Service stopped successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Unable to stop!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            FetchService();
+            CheckServiceStatus();
         }
     }
 }
