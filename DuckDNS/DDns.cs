@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,11 +10,23 @@ namespace DuckDNS
 {
     class DDns
     {
-        private const string FILENAME = "DuckDNS.cfg";
+        private string filename;
         public string Domain;
         public string Token;
         public int Interval;
         private WebClient cli = new WebClient();
+
+        public DDns()
+        {
+            filename = "DuckDNS.cfg";
+            Interval = 1800000;
+        }
+
+        public DDns(string filename)
+        {
+            this.filename = filename;
+            Interval = 1800000;
+        }
 
         public void ParseInterval(string value)
         {
@@ -120,15 +133,37 @@ namespace DuckDNS
             return data == "OK";
         }
 
+        public void Load(string filename)
+        {
+            string[] data = null;
+
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    data = File.ReadAllLines(filename);
+                }
+                catch { }; // Silent read errors
+            }
+
+            Domain = data != null && data.Length > 0 ? data[0] : "";
+            Token = data != null && data.Length > 1 ? CharSwitch(data[1]) : "";
+
+            if (!TryParseInterval(data != null && data.Length > 2 ? data[2] : "30m"))
+            {
+                Interval = 1800000;
+            }
+        }
+
         public void Load()
         {
             string[] data = null;
 
-            if (File.Exists(FILENAME))
+            if (File.Exists(filename))
             {
                 try
                 {
-                    data = File.ReadAllLines(FILENAME);
+                    data = File.ReadAllLines(filename);
                 }
                 catch { }; // Silent read errors
             }
@@ -147,7 +182,7 @@ namespace DuckDNS
             string[] data = { Domain, CharSwitch(Token), ToIntervalString() };
             try
             {
-                File.WriteAllLines(FILENAME, data);
+                File.WriteAllLines(filename, data);
             }
             catch { }; // Silent write errors (for read-only fs)
         }

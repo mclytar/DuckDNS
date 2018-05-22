@@ -61,6 +61,7 @@ namespace DuckDNS
                         ServiceStart();
                         return;
                     }
+
                     if (arg.ToLower() == "--svc-stop")
                     {
                         ServiceStop();
@@ -82,7 +83,7 @@ namespace DuckDNS
         {
             ServiceController service = new ServiceController("DuckDNS");
 
-            service.Start();
+            service.Start(new string[] { Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\DuckDNS.cfg" });
 
             service.WaitForStatus(ServiceControllerStatus.Running);
         }

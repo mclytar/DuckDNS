@@ -13,40 +13,53 @@ namespace DuckDNS
 
         public DuckDNSService()
         {
-            this.ServiceName = "DuckDNS";
-            this.EventLog.Log = "Application";
+            ServiceName = "DuckDNS";
+            EventLog.Log = "Application";
 
-            this.CanHandlePowerEvent = false;
-            this.CanHandleSessionChangeEvent = false;
-            this.CanPauseAndContinue = false;
-            this.CanShutdown = false;
-            this.CanStop = true;
+            CanHandlePowerEvent = false;
+            CanHandleSessionChangeEvent = false;
+            CanPauseAndContinue = false;
+            CanShutdown = false;
+            CanStop = true;
 
-            // this.timer.Elapsed += this.Update;
-        }
+            ddns = new DDns();
 
-        public void Start()
-        {
-            this.OnStart(null);
+            timer = new Timer();
+            timer.Elapsed += Update;
         }
 
         public void Update(object sender, ElapsedEventArgs e)
         {
-            // this.ddns.Update();
+            try
+            {
+                ddns.Update();
+            }
+            catch { } // Silent error, for now.
         }
 
         protected override void OnStart(string[] args)
         {
             base.OnStart(args);
-            
-            // this.timer.Start();
+
+            if (args != null && args.Length > 0)
+            {
+                ddns.Load(args[0]);
+            }
+            else
+            {
+                ddns.Load();
+            }
+
+            timer.Interval = ddns.Interval;
+
+            timer.Start();
         }
 
         protected override void OnStop()
         {
             base.OnStop();
 
-            // this.timer.Stop();
+            timer.Stop();
         }
     }
 }
