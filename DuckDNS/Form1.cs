@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -23,19 +24,36 @@ namespace DuckDNS
         public Form1()
         {
             InitializeComponent();
+
             notifyIcon.Icon = Icon;
+
             //Top = Screen.PrimaryScreen.WorkingArea.Bottom - (Height + 200);
             //Left = Screen.PrimaryScreen.WorkingArea.Right - (Width + 25);
+
             ddns.Load();
+
             tbDomain.Text = ddns.Domain;
             tbToken.Text = ddns.Token;
             cbInterval.Text = ddns.Interval;
             ParseInterval();
             RefreshTimer();
+
             notifyIcon.Icon = icoTray;
             allowshowdisplay = tbDomain.Text.Length == 0 || tbToken.Text.Length == 0;
             if (!allowshowdisplay)
                 UpdateDNS();
+
+            if (DuckDNS.Program.IsAdministrator())
+            {
+                restartAsAdministratorToolStripMenuItem.Enabled = false;
+                installWindowsServiceToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                restartAsAdministratorToolStripMenuItem.Enabled = true;
+                installWindowsServiceToolStripMenuItem.Enabled = false;
+                startServiceToolStripMenuItem.Enabled = false;
+            }
         }
 
         protected override void SetVisibleCore(bool value)
@@ -174,6 +192,18 @@ namespace DuckDNS
         {
             icoTray.Dispose();
             icoTrayC.Dispose();
+        }
+
+        private void restartAsAdministratorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (DuckDNS.Program.ElevateProcess())
+            {
+                Application.Exit();
+            }
+            else
+            {
+                MessageBox.Show("Unable to restart as administrator.", "DuckDNS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

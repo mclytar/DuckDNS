@@ -48,6 +48,10 @@
             this.lblInfo = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.installWindowsServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restartAsAdministratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,39 +68,43 @@
             this.updateNowToolStripMenuItem,
             this.toolStripSeparator1,
             this.installStartupShortcutToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.restartAsAdministratorToolStripMenuItem,
+            this.installWindowsServiceToolStripMenuItem,
+            this.startServiceToolStripMenuItem,
             this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(193, 82);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(199, 176);
             // 
             // updateNowToolStripMenuItem
             // 
             this.updateNowToolStripMenuItem.Name = "updateNowToolStripMenuItem";
-            this.updateNowToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.updateNowToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.updateNowToolStripMenuItem.Text = "Update Now!";
             this.updateNowToolStripMenuItem.Click += new System.EventHandler(this.updateNowToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
             // 
             // installStartupShortcutToolStripMenuItem
             // 
             this.installStartupShortcutToolStripMenuItem.Name = "installStartupShortcutToolStripMenuItem";
-            this.installStartupShortcutToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.installStartupShortcutToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.installStartupShortcutToolStripMenuItem.Text = "Install startup shortcut";
             this.installStartupShortcutToolStripMenuItem.Click += new System.EventHandler(this.installStartupShortcutToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -209,6 +217,32 @@
             // 
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
+            // installWindowsServiceToolStripMenuItem
+            // 
+            this.installWindowsServiceToolStripMenuItem.Enabled = false;
+            this.installWindowsServiceToolStripMenuItem.Name = "installWindowsServiceToolStripMenuItem";
+            this.installWindowsServiceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.installWindowsServiceToolStripMenuItem.Text = "Install service";
+            // 
+            // startServiceToolStripMenuItem
+            // 
+            this.startServiceToolStripMenuItem.Enabled = false;
+            this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
+            this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.startServiceToolStripMenuItem.Text = "Start service";
+            // 
+            // restartAsAdministratorToolStripMenuItem
+            // 
+            this.restartAsAdministratorToolStripMenuItem.Name = "restartAsAdministratorToolStripMenuItem";
+            this.restartAsAdministratorToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.restartAsAdministratorToolStripMenuItem.Text = "Run as administrator";
+            this.restartAsAdministratorToolStripMenuItem.Click += new System.EventHandler(this.restartAsAdministratorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(195, 6);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -258,6 +292,10 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem installStartupShortcutToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem restartAsAdministratorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem installWindowsServiceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
     }
 }
 
