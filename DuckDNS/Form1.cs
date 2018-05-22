@@ -16,7 +16,6 @@ namespace DuckDNS
     public partial class Form1 : Form
     {
         private DDns ddns = new DDns();
-        private int intervalMS;
         private bool allowshowdisplay = false;
         private bool canClose = false;
         private Icon icoTray = Resources.tray;
@@ -37,8 +36,8 @@ namespace DuckDNS
 
             tbDomain.Text = ddns.Domain;
             tbToken.Text = ddns.Token;
-            cbInterval.Text = ddns.Interval;
-            ParseInterval();
+            cbInterval.Text = ddns.ToIntervalString();
+
             RefreshTimer();
 
             notifyIcon.Icon = icoTray;
@@ -127,59 +126,45 @@ namespace DuckDNS
             }
         }
 
-        private void ParseInterval()
-        {
-            string istr = cbInterval.Text.ToLower();
-            int iint=0;
-            bool error=false;
-
-            if (istr.Length==0 || !int.TryParse(istr.Substring(0, istr.Length - 1), out iint))
-                error = true;
-            else
-            {
-                switch (istr[istr.Length - 1])
-                {
-                    case 's':
-                        intervalMS = iint * 1000;
-                        break;
-                    case 'm':
-                        intervalMS = iint * 60000;
-                        break;
-                    case 'h':
-                        intervalMS = iint * 3600000;
-                        break;
-                    case 'd':
-                        intervalMS = iint * 86400000;
-                        break;
-                    default:
-                        error = true;
-                        break;
-                }
-            }
-            cbInterval.BackColor = error ? Color.LightPink : SystemColors.Window;
-        }
-
         private void RefreshTimer()
         {
             timer.Enabled = false;
-            timer.Interval = intervalMS;
+            timer.Interval = ddns.Interval;
             timer.Enabled = true;
         }
 
         private void btOk_Click(object sender, EventArgs e)
         {
-            ddns.Domain = tbDomain.Text;
-            ddns.Token = tbToken.Text;
-            ddns.Interval = cbInterval.Text;
-            ddns.Save();
-            Hide();
-            UpdateDNS();
-            RefreshTimer();
+            if (!ddns.TryParseInterval(cbInterval.Text))
+            {
+                MessageBox.Show("Invalid interval format!", "Duck DNS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                cbInterval.BackColor = Color.LightPink;
+            }
+            else
+            {
+                cbInterval.BackColor = SystemColors.Window;
+
+                ddns.Domain = tbDomain.Text;
+                ddns.Token = tbToken.Text;
+                ddns.Save();
+
+                Hide();
+                UpdateDNS();
+                RefreshTimer();
+            }
         }
 
         private void cbInterval_TextChanged(object sender, EventArgs e)
         {
-            ParseInterval();
+            /*if (!ddns.TryParseInterval(cbInterval.Text))
+            {
+                MessageBox.Show("Invalid interval format!", "Duck DNS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                cbInterval.BackColor = Color.LightPink;
+            }
+            else
+            {
+                cbInterval.BackColor = SystemColors.Window;
+            }*/
         }
 
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
@@ -193,10 +178,11 @@ namespace DuckDNS
             {
                 e.Cancel = true;
                 Hide();
+
                 // Reset values (discard)
                 tbDomain.Text = ddns.Domain;
                 tbToken.Text = ddns.Token;
-                cbInterval.Text = ddns.Interval;
+                cbInterval.Text = ddns.ToIntervalString();
             }
         }
 
