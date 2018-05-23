@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 
 namespace DuckDNS
 {
     class DDns
     {
-        private string filename;
+        public string Filename;
+        public bool EnableLog = false;
+        public string LogFilename;
         public string Domain;
         public string Token;
         public int Interval;
@@ -18,13 +21,22 @@ namespace DuckDNS
 
         public DDns()
         {
-            filename = "DuckDNS.cfg";
+            Filename = "DuckDNS.cfg";
+            LogFilename = "DuckDNS.log";
             Interval = 1800000;
         }
 
         public DDns(string filename)
         {
-            this.filename = filename;
+            Filename = filename;
+            LogFilename = Path.GetDirectoryName(filename) + "\\" + Path.GetFileNameWithoutExtension(filename) + ".log";
+            Interval = 1800000;
+        }
+
+        public DDns(string filename, string logFilename)
+        {
+            Filename = filename;
+            LogFilename = logFilename;
             Interval = 1800000;
         }
 
@@ -128,44 +140,31 @@ namespace DuckDNS
 
         public bool Update()
         {
-            string url = "https://www.duckdns.org/update?domains=" + Domain + "&token=" + Token + "&ip=";
+            string url = "https://www.duckdns.org/update?domains=" + Domain + "&token=" + Token;
             string data = cli.DownloadString(url);
-            return data == "OK";
-        }
+            bool result = data == "OK";
 
-        public void Load(string filename)
-        {
-            string[] data = null;
+            if (result) Log("Domain name updated successfully.");
+            else Log("Error updating domain name.");
 
-            if (File.Exists(filename))
-            {
-                try
-                {
-                    data = File.ReadAllLines(filename);
-                }
-                catch { }; // Silent read errors
-            }
-
-            Domain = data != null && data.Length > 0 ? data[0] : "";
-            Token = data != null && data.Length > 1 ? CharSwitch(data[1]) : "";
-
-            if (!TryParseInterval(data != null && data.Length > 2 ? data[2] : "30m"))
-            {
-                Interval = 1800000;
-            }
+            return result;
         }
 
         public void Load()
         {
             string[] data = null;
 
-            if (File.Exists(filename))
+            if (File.Exists(Filename))
             {
                 try
                 {
-                    data = File.ReadAllLines(filename);
+                    data = File.ReadAllLines(Filename);
+                    Log("Configuration file loaded.");
                 }
-                catch { }; // Silent read errors
+                catch
+                {
+                    Log("Can't load configuration file.");
+                };
             }
 
             Domain = data != null && data.Length > 0 ? data[0] : "";
@@ -175,16 +174,22 @@ namespace DuckDNS
             {
                 Interval = 1800000;
             }
+
+            EnableLog = data != null && data.Length > 3 && data[3] == "log";
         }
 
         public void Save()
         {
-            string[] data = { Domain, CharSwitch(Token), ToIntervalString() };
+            string[] data = { Domain, CharSwitch(Token), ToIntervalString(), EnableLog ? "log" : "" };
             try
             {
-                File.WriteAllLines(filename, data);
+                File.WriteAllLines(Filename, data);
+                Log("Configuration file saved.");
             }
-            catch { }; // Silent write errors (for read-only fs)
+            catch
+            {
+                Log("Can't save configuration file.");
+            };
         }
 
         private string CharSwitch(string str)
@@ -200,6 +205,11 @@ namespace DuckDNS
                     sb[i] = b[chi];
             }
             return sb.ToString();
+        }
+
+        public void Log(string str)
+        {
+            if (EnableLog) File.AppendAllText(LogFilename, "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "] " + str + "\n");
         }
     }
 }

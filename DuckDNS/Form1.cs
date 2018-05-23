@@ -40,6 +40,8 @@ namespace DuckDNS
 
             ddns.Load();
 
+            eventLogToolStripMenuItem.Checked = ddns.EnableLog;
+
             tbDomain.Text = ddns.Domain;
             tbToken.Text = ddns.Token;
             cbInterval.Text = ddns.ToIntervalString();
@@ -118,8 +120,11 @@ namespace DuckDNS
             try
             {
                 notifyIcon.Icon = icoTrayC;
+
                 bool update = ddns.Update();
+
                 lblInfo.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " (" + (update ? "OK" : "FAILED") + ")";
+
                 if (!update)
                 {
                     MessageBox.Show("Error updating Duck DNS domain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -269,7 +274,6 @@ namespace DuckDNS
             {
                 MessageBox.Show("Unable to start!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
             FetchService();
             CheckServiceStatus();
         }
@@ -287,6 +291,15 @@ namespace DuckDNS
 
             FetchService();
             CheckServiceStatus();
+        }
+
+        private void eventLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ddns.EnableLog = !ddns.EnableLog;
+
+            ddns.Save();
+
+            eventLogToolStripMenuItem.Checked = ddns.EnableLog;
         }
     }
 }

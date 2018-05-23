@@ -34,25 +34,32 @@ namespace DuckDNS
             {
                 ddns.Update();
             }
-            catch { } // Silent error, for now.
+            catch
+            {
+                ddns.Log("Network error.");
+            }
         }
 
         protected override void OnStart(string[] args)
         {
             base.OnStart(args);
 
-            if (args != null && args.Length > 0)
+            if (args != null && args.Length > 1)
             {
-                ddns.Load(args[0]);
+                ddns = new DDns(args[0], args[1]);
             }
-            else
+            else if (args != null && args.Length > 0)
             {
-                ddns.Load();
+                ddns = new DDns(args[0]);
             }
+
+            ddns.Load();
 
             timer.Interval = ddns.Interval;
 
             timer.Start();
+
+            ddns.Log("Service started.");
         }
 
         protected override void OnStop()
@@ -60,6 +67,8 @@ namespace DuckDNS
             base.OnStop();
 
             timer.Stop();
+
+            ddns.Log("Service stopped.");
         }
     }
 }

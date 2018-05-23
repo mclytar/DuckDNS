@@ -37,7 +37,9 @@
             this.installStartupShortcutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.installServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uninstallServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btOk = new System.Windows.Forms.Button();
@@ -51,8 +53,7 @@
             this.lblInfo = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.uninstallServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stopServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,6 +68,7 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.updateNowToolStripMenuItem,
+            this.eventLogToolStripMenuItem,
             this.toolStripSeparator1,
             this.installStartupShortcutToolStripMenuItem,
             this.toolStripSeparator3,
@@ -110,12 +112,26 @@
             this.installServiceToolStripMenuItem.Text = "Install service";
             this.installServiceToolStripMenuItem.Click += new System.EventHandler(this.installServiceToolStripMenuItem_Click);
             // 
+            // uninstallServiceToolStripMenuItem
+            // 
+            this.uninstallServiceToolStripMenuItem.Name = "uninstallServiceToolStripMenuItem";
+            this.uninstallServiceToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.uninstallServiceToolStripMenuItem.Text = "Uninstall service";
+            this.uninstallServiceToolStripMenuItem.Click += new System.EventHandler(this.uninstallServiceToolStripMenuItem_Click);
+            // 
             // startServiceToolStripMenuItem
             // 
             this.startServiceToolStripMenuItem.Name = "startServiceToolStripMenuItem";
             this.startServiceToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.startServiceToolStripMenuItem.Text = "Start service";
             this.startServiceToolStripMenuItem.Click += new System.EventHandler(this.startServiceToolStripMenuItem_Click);
+            // 
+            // stopServiceToolStripMenuItem
+            // 
+            this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
+            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.stopServiceToolStripMenuItem.Text = "Stop service";
+            this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopServiceToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -238,19 +254,12 @@
             // 
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
-            // uninstallServiceToolStripMenuItem
+            // eventLogToolStripMenuItem
             // 
-            this.uninstallServiceToolStripMenuItem.Name = "uninstallServiceToolStripMenuItem";
-            this.uninstallServiceToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.uninstallServiceToolStripMenuItem.Text = "Uninstall service";
-            this.uninstallServiceToolStripMenuItem.Click += new System.EventHandler(this.uninstallServiceToolStripMenuItem_Click);
-            // 
-            // stopServiceToolStripMenuItem
-            // 
-            this.stopServiceToolStripMenuItem.Name = "stopServiceToolStripMenuItem";
-            this.stopServiceToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.stopServiceToolStripMenuItem.Text = "Stop service";
-            this.stopServiceToolStripMenuItem.Click += new System.EventHandler(this.stopServiceToolStripMenuItem_Click);
+            this.eventLogToolStripMenuItem.Name = "eventLogToolStripMenuItem";
+            this.eventLogToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.eventLogToolStripMenuItem.Text = "Enable event log";
+            this.eventLogToolStripMenuItem.Click += new System.EventHandler(this.eventLogToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -306,6 +315,7 @@
         private System.Windows.Forms.ToolStripMenuItem startServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uninstallServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eventLogToolStripMenuItem;
     }
 }
 
