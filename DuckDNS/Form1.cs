@@ -21,6 +21,8 @@ namespace DuckDNS
         private Icon icoTray = Resources.tray;
         private Icon icoTrayC = Resources.tray_checking;
 
+        private Image shieldImage = Windows.GetUACIcon();
+
         ServiceController svcController = null;
 
         public Form1()
@@ -29,8 +31,12 @@ namespace DuckDNS
 
             notifyIcon.Icon = Icon;
 
-            //Top = Screen.PrimaryScreen.WorkingArea.Bottom - (Height + 200);
-            //Left = Screen.PrimaryScreen.WorkingArea.Right - (Width + 25);
+            if (shieldImage == null) shieldImage = SystemIcons.Shield.ToBitmap();
+
+            installServiceToolStripMenuItem.Image = shieldImage;
+            uninstallServiceToolStripMenuItem.Image = shieldImage;
+            startServiceToolStripMenuItem.Image = shieldImage;
+            stopServiceToolStripMenuItem.Image = shieldImage;
 
             ddns.Load();
 
@@ -156,15 +162,7 @@ namespace DuckDNS
 
         private void cbInterval_TextChanged(object sender, EventArgs e)
         {
-            /*if (!ddns.TryParseInterval(cbInterval.Text))
-            {
-                MessageBox.Show("Invalid interval format!", "Duck DNS", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                cbInterval.BackColor = Color.LightPink;
-            }
-            else
-            {
-                cbInterval.BackColor = SystemColors.Window;
-            }*/
+
         }
 
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
@@ -223,7 +221,19 @@ namespace DuckDNS
         {
             if (Program.RunAsAdministrator("--install"))
             {
-                MessageBox.Show("Service installed successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DialogResult result = MessageBox.Show("Service installed successfully!\nDo you want to start the service now?", "DuckDNS update service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                if (result == DialogResult.Yes)
+                {
+                    if (Program.RunAsAdministrator("--svc-start"))
+                    {
+                        MessageBox.Show("Service started successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Unable to start!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
             else
             {
