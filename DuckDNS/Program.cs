@@ -67,6 +67,12 @@ namespace DuckDNS
                         ServiceStop();
                         return;
                     }
+
+                    if (arg.ToLower() == "--svc-restart")
+                    {
+                        ServiceRestart();
+                        return;
+                    }
                 }
 
                 Application.EnableVisualStyles();
@@ -84,7 +90,19 @@ namespace DuckDNS
             ServiceController service = new ServiceController("DuckDNS");
 
             service.Start(new string[] { Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\DuckDNS.cfg" });
+            service.WaitForStatus(ServiceControllerStatus.Running);
+        }
 
+        public static void ServiceRestart()
+        {
+            ServiceController service = new ServiceController("DuckDNS");
+
+            service.Stop();
+            service.Refresh();
+            service.WaitForStatus(ServiceControllerStatus.Stopped);
+
+            service.Start(new string[] { Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\DuckDNS.cfg" });
+            service.Refresh();
             service.WaitForStatus(ServiceControllerStatus.Running);
         }
 
@@ -93,7 +111,6 @@ namespace DuckDNS
             ServiceController service = new ServiceController("DuckDNS");
 
             service.Stop();
-
             service.WaitForStatus(ServiceControllerStatus.Stopped);
         }
 

@@ -33,6 +33,7 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.updateNowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.installStartupShortcutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -53,7 +54,7 @@
             this.lblInfo = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.eventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restartServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,10 +77,11 @@
             this.uninstallServiceToolStripMenuItem,
             this.startServiceToolStripMenuItem,
             this.stopServiceToolStripMenuItem,
+            this.restartServiceToolStripMenuItem,
             this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(193, 198);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(193, 242);
             // 
             // updateNowToolStripMenuItem
             // 
@@ -87,6 +89,13 @@
             this.updateNowToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.updateNowToolStripMenuItem.Text = "Update Now!";
             this.updateNowToolStripMenuItem.Click += new System.EventHandler(this.updateNowToolStripMenuItem_Click);
+            // 
+            // eventLogToolStripMenuItem
+            // 
+            this.eventLogToolStripMenuItem.Name = "eventLogToolStripMenuItem";
+            this.eventLogToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.eventLogToolStripMenuItem.Text = "Enable event log";
+            this.eventLogToolStripMenuItem.Click += new System.EventHandler(this.eventLogToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -254,12 +263,12 @@
             // 
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
-            // eventLogToolStripMenuItem
+            // restartServiceToolStripMenuItem
             // 
-            this.eventLogToolStripMenuItem.Name = "eventLogToolStripMenuItem";
-            this.eventLogToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.eventLogToolStripMenuItem.Text = "Enable event log";
-            this.eventLogToolStripMenuItem.Click += new System.EventHandler(this.eventLogToolStripMenuItem_Click);
+            this.restartServiceToolStripMenuItem.Name = "restartServiceToolStripMenuItem";
+            this.restartServiceToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.restartServiceToolStripMenuItem.Text = "Restart service";
+            this.restartServiceToolStripMenuItem.Click += new System.EventHandler(this.restartServiceToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -316,6 +325,7 @@
         private System.Windows.Forms.ToolStripMenuItem uninstallServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eventLogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem restartServiceToolStripMenuItem;
     }
 }
 

@@ -42,8 +42,6 @@ namespace DuckDNS
 
         protected override void OnStart(string[] args)
         {
-            base.OnStart(args);
-
             if (args != null && args.Length > 1)
             {
                 ddns = new DDns(args[0], args[1]);
@@ -64,8 +62,6 @@ namespace DuckDNS
 
         protected override void OnStop()
         {
-            base.OnStop();
-
             timer.Stop();
 
             ddns.Log("Service stopped.");

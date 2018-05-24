@@ -37,6 +37,7 @@ namespace DuckDNS
             uninstallServiceToolStripMenuItem.Image = shieldImage;
             startServiceToolStripMenuItem.Image = shieldImage;
             stopServiceToolStripMenuItem.Image = shieldImage;
+            restartServiceToolStripMenuItem.Image = shieldImage;
 
             ddns.Load();
 
@@ -81,6 +82,7 @@ namespace DuckDNS
                 uninstallServiceToolStripMenuItem.Visible = false;
                 startServiceToolStripMenuItem.Visible = false;
                 stopServiceToolStripMenuItem.Visible = false;
+                restartServiceToolStripMenuItem.Visible = false;
             }
             else
             {
@@ -93,11 +95,13 @@ namespace DuckDNS
                 {
                     startServiceToolStripMenuItem.Visible = false;
                     stopServiceToolStripMenuItem.Visible = true;
+                    restartServiceToolStripMenuItem.Visible = true;
                 }
                 else
                 {
                     startServiceToolStripMenuItem.Visible = true;
                     stopServiceToolStripMenuItem.Visible = false;
+                    restartServiceToolStripMenuItem.Visible = false;
                 }
             }
         }
@@ -227,6 +231,7 @@ namespace DuckDNS
             if (Program.RunAsAdministrator("--install"))
             {
                 DialogResult result = MessageBox.Show("Service installed successfully!\nDo you want to start the service now?", "DuckDNS update service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                ddns.Log("Service installed.");
 
                 if (result == DialogResult.Yes)
                 {
@@ -254,6 +259,7 @@ namespace DuckDNS
             if (Program.RunAsAdministrator("--uninstall"))
             {
                 MessageBox.Show("Service uninstalled successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ddns.Log("Service uninstalled.");
             }
             else
             {
@@ -300,6 +306,20 @@ namespace DuckDNS
             ddns.Save();
 
             eventLogToolStripMenuItem.Checked = ddns.EnableLog;
+        }
+
+        private void restartServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.RunAsAdministrator("--svc-restart"))
+            {
+                MessageBox.Show("Service restarted successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Unable to restart!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            FetchService();
+            CheckServiceStatus();
         }
     }
 }
