@@ -228,14 +228,14 @@ namespace DuckDNS
 
         private void installServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.RunAsAdministrator("--install"))
+            if (Program.RunAsAdministrator("--install") == Program.ExitCode.Ok)
             {
                 DialogResult result = MessageBox.Show("Service installed successfully!\nDo you want to start the service now?", "DuckDNS update service", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 ddns.Log("Service installed.");
 
                 if (result == DialogResult.Yes)
                 {
-                    if (Program.RunAsAdministrator("--svc-start"))
+                    if (Program.RunAsAdministrator("--svc-start") == Program.ExitCode.Ok)
                     {
                         MessageBox.Show("Service started successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -256,7 +256,7 @@ namespace DuckDNS
 
         private void uninstallServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.RunAsAdministrator("--uninstall"))
+            if (Program.RunAsAdministrator("--uninstall") == Program.ExitCode.Ok)
             {
                 MessageBox.Show("Service uninstalled successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ddns.Log("Service uninstalled.");
@@ -272,7 +272,7 @@ namespace DuckDNS
 
         private void startServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.RunAsAdministrator("--svc-start"))
+            if (Program.RunAsAdministrator("--svc-start") == Program.ExitCode.Ok)
             {
                 MessageBox.Show("Service started successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -286,7 +286,7 @@ namespace DuckDNS
 
         private void stopServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.RunAsAdministrator("--svc-stop"))
+            if (Program.RunAsAdministrator("--svc-stop") == Program.ExitCode.Ok)
             {
                 MessageBox.Show("Service stopped successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -310,7 +310,7 @@ namespace DuckDNS
 
         private void restartServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.RunAsAdministrator("--svc-restart"))
+            if (Program.RunAsAdministrator("--svc-restart") == Program.ExitCode.Ok)
             {
                 MessageBox.Show("Service restarted successfully!", "DuckDNS update service", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

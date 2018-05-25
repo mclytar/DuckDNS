@@ -17,6 +17,17 @@ namespace DuckDNS
     [RunInstaller(true)]
     public class Program : Installer
     {
+
+        public enum ExitCode
+        {
+            Ok = 0,
+            AlreadyDone = 1,
+            NotRunning = 2,
+            NotAdministrator = 3,
+            OperationCancelledByUser = 4,
+            Unknown = -1
+        }
+
         public Program()
         {
             ServiceProcessInstaller svcProcInstaller = new ServiceProcessInstaller();
@@ -46,31 +57,136 @@ namespace DuckDNS
                 {
                     if (arg.ToLower() == "--install")
                     {
-                        ManagedInstallerClass.InstallHelper(new string[] { Assembly.GetExecutingAssembly().Location });
+                        if (!IsAdministrator()) Environment.Exit((int)ExitCode.NotAdministrator);
+
+                        try
+                        {
+                            ManagedInstallerClass.InstallHelper(new string[] { Assembly.GetExecutingAssembly().Location });
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.InnerException.GetType() == typeof(Win32Exception))
+                            {
+                                Win32Exception win32Ex = (Win32Exception)ex.InnerException;
+                                switch (win32Ex.NativeErrorCode)
+                                {
+                                    // The specified service already exists.
+                                    case 1073:
+                                        Environment.Exit((int)ExitCode.AlreadyDone);
+                                        break;
+                                }
+                            }
+
+                            Environment.Exit((int)ExitCode.Unknown);
+                        }
                         return;
                     }
 
                     if (arg.ToLower() == "--uninstall")
                     {
-                        ManagedInstallerClass.InstallHelper(new string[] { "/u", Assembly.GetExecutingAssembly().Location });
+                        if (!IsAdministrator()) Environment.Exit((int)ExitCode.NotAdministrator);
+
+                        try
+                        {
+                            ManagedInstallerClass.InstallHelper(new string[] { "/u", Assembly.GetExecutingAssembly().Location });
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.InnerException.GetType() == typeof(Win32Exception))
+                            {
+                                Win32Exception win32Ex = (Win32Exception)ex.InnerException;
+                                switch (win32Ex.NativeErrorCode)
+                                {
+                                    // The specified service does not exist as an installed service.
+                                    case 1060:
+                                        Environment.Exit((int)ExitCode.AlreadyDone);
+                                        break;
+                                }
+                            }
+
+                            Environment.Exit((int)ExitCode.Unknown);
+                        }
                         return;
                     }
 
                     if (arg.ToLower() == "--svc-start")
                     {
-                        ServiceStart();
+                        if (!IsAdministrator()) Environment.Exit((int)ExitCode.NotAdministrator);
+
+                        try
+                        {
+                            ServiceStart();
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.InnerException.GetType() == typeof(Win32Exception))
+                            {
+                                Win32Exception win32Ex = (Win32Exception)ex.InnerException;
+                                switch (win32Ex.NativeErrorCode)
+                                {
+                                    // The specified service is already running.
+                                    case 1056:
+                                        Environment.Exit((int)ExitCode.AlreadyDone);
+                                        break;
+                                }
+                            }
+
+                            Environment.Exit((int)ExitCode.Unknown);
+                        }
                         return;
                     }
 
                     if (arg.ToLower() == "--svc-stop")
                     {
-                        ServiceStop();
+                        if (!IsAdministrator()) Environment.Exit((int)ExitCode.NotAdministrator);
+
+                        try
+                        {
+                            ServiceStop();
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.InnerException.GetType() == typeof(Win32Exception))
+                            {
+                                Win32Exception win32Ex = (Win32Exception)ex.InnerException;
+                                switch (win32Ex.NativeErrorCode)
+                                {
+                                    // The specified service is not running.
+                                    case 1062:
+                                        Environment.Exit((int)ExitCode.AlreadyDone);
+                                        break;
+                                }
+                            }
+
+                            Environment.Exit((int)ExitCode.Unknown);
+                        }
                         return;
                     }
 
                     if (arg.ToLower() == "--svc-restart")
                     {
-                        ServiceRestart();
+                        if (!IsAdministrator()) Environment.Exit((int)ExitCode.NotAdministrator);
+
+                        try
+                        {
+                            ServiceRestart();
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.InnerException.GetType() == typeof(Win32Exception))
+                            {
+                                Win32Exception win32Ex = (Win32Exception)ex.InnerException;
+                                switch (win32Ex.NativeErrorCode)
+                                {
+                                    // The specified service is not running.
+                                    case 1062:
+                                        Environment.Exit((int)ExitCode.NotRunning);
+                                        break;
+                                }
+                            }
+
+                            Environment.Exit((int)ExitCode.Unknown);
+                        }
                         return;
                     }
                 }
@@ -123,7 +239,19 @@ namespace DuckDNS
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static bool RunAsAdministrator(string args)
+        private static ExitCode GetExitCode(Process process)
+        {
+            try
+            {
+                return (ExitCode)process.ExitCode;
+            }
+            catch
+            {
+                return ExitCode.Unknown;
+            }
+        }
+
+        public static ExitCode RunAsAdministrator(string args)
         {
             Process currentProcess = Process.GetCurrentProcess();
             Process adminProcess = new Process();
@@ -141,16 +269,19 @@ namespace DuckDNS
             try
             {
                 if (!adminProcess.Start())
-                    return false;
+                    return ExitCode.Unknown;
+
+                adminProcess.WaitForExit();
+                return GetExitCode(adminProcess);
             }
             catch (Win32Exception e)
             {
                 // ERROR_CANCELLED: The operation was cancelled by the user.
                 if (e.NativeErrorCode == 1223)
-                    return false;
-                throw;
+                    return ExitCode.OperationCancelledByUser;
+
+                return ExitCode.Unknown;
             };
-            return true;
         }
     }
 }
