@@ -42,15 +42,6 @@ namespace DuckDNS
 
         protected override void OnStart(string[] args)
         {
-            if (args != null && args.Length > 1)
-            {
-                ddns = new DDns(args[0], args[1]);
-            }
-            else if (args != null && args.Length > 0)
-            {
-                ddns = new DDns(args[0]);
-            }
-
             ddns.Load();
 
             timer.Interval = ddns.Interval;

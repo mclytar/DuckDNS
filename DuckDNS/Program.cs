@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
@@ -61,7 +62,15 @@ namespace DuckDNS
 
                         try
                         {
-                            ManagedInstallerClass.InstallHelper(new string[] { Assembly.GetExecutingAssembly().Location });
+                            ManagedInstallerClass.InstallHelper(new string[] { "/LogFile=", Assembly.GetExecutingAssembly().Location });
+
+                            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\DuckDNS");
+
+                            if (key != null)
+                            {
+                                key.SetValue("ImagePath", Assembly.GetExecutingAssembly().Location + @"\DuckDNS.exe");
+                                key.Close();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -88,7 +97,7 @@ namespace DuckDNS
 
                         try
                         {
-                            ManagedInstallerClass.InstallHelper(new string[] { "/u", Assembly.GetExecutingAssembly().Location });
+                            ManagedInstallerClass.InstallHelper(new string[] { "/u", "/LogFile=", Assembly.GetExecutingAssembly().Location });
                         }
                         catch (Exception ex)
                         {
@@ -205,7 +214,7 @@ namespace DuckDNS
         {
             ServiceController service = new ServiceController("DuckDNS");
 
-            service.Start(new string[] { Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\DuckDNS.cfg" });
+            service.Start();
             service.WaitForStatus(ServiceControllerStatus.Running);
         }
 
@@ -217,7 +226,7 @@ namespace DuckDNS
             service.Refresh();
             service.WaitForStatus(ServiceControllerStatus.Stopped);
 
-            service.Start(new string[] { Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\DuckDNS.cfg" });
+            service.Start();
             service.Refresh();
             service.WaitForStatus(ServiceControllerStatus.Running);
         }

@@ -39,6 +39,9 @@ namespace DuckDNS
             stopServiceToolStripMenuItem.Image = shieldImage;
             restartServiceToolStripMenuItem.Image = shieldImage;
 
+            // Conflict with service installation; may be resolved in next release.
+            // installStartupShortcutToolStripMenuItem.Visible = false;
+
             ddns.Load();
 
             eventLogToolStripMenuItem.Checked = ddns.EnableLog;
